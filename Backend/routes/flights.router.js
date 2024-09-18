@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const FlightsController = require('../controllers/flights.controller');
+const { getAllFlights, getMyFlights, addMyFlights, deleteMyFlights } = require('../controllers/flights.controller');
 
-router.get('/', FlightsController.getAllFlights);
-router.get('/myFlights', FlightsController.getMyFlights);
-router.post('/deleteMyFlight', FlightsController.deleteMyFlight);
-router.post('/addMyFlight', FlightsController.addMyFlight);
+router.get('/', getAllFlights);
+router.get('/myFlights', getMyFlights);
+router.post('/addMyFlight', addMyFlights);
+router.post('/deleteMyFlight', deleteMyFlights);
 
 module.exports = router;
