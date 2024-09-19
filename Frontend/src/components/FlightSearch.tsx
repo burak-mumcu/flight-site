@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { Flight } from '../interfaces/Flight';
+import { useFlightStore } from '../stores/FlightStore';
 
 const FlightSearch: React.FC = () => {
   const [from, setFrom] = useState<string>('');
   const [to, setTo] = useState<string>('');
   const [date, setDate] = useState<string>('');
-  const [flights, setFlights] = useState<Flight[]>([]);
- 
+  const { flights } = useFlightStore();
 
   const handleSearch = () => {
     flights.filter((flight) => flight.departure === from && flight.arrival === to && flight.date === date);

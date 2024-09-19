@@ -1,26 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { Flight } from '../interfaces/Flight';
+import React, { useEffect } from 'react';
 import axios from 'axios';
+import { useFlightStore } from '../stores/FlightStore';
 
 const FlightResults: React.FC = () => {
-  const [flights, setFlights] = useState<Flight[]>([]);
+//  const [flights, setFlights] = useState<Flight[]>([]);
+  const { flights, fetchFlights } = useFlightStore();
 
   useEffect(() => {
     fetchFlights();
+    flights.map((flight)=>{
+      const timeString = flight.duration;
+      const hourMatch = timeString.match(/(\d+)h/);  // Saat eşleşmesini bulur
+      const minuteMatch = timeString.match(/(\d+)m/); // Dakika eşleşmesini bulur
+  
+      const hours = hourMatch ? parseInt(hourMatch[1]) : 0;
+      const minutes = minuteMatch ? parseInt(minuteMatch[1]) : 0;
+  
+      let time = hours * 60 + minutes;
+      flight.duration = time.toString();
+    })
   },[]);
-
-  const fetchFlights = async () => {
-    try {
-      console.log('1');
-      const response = await axios.get('http://localhost:7000/flights');
-      console.log('2');
-      if (response.status !== 200) throw new Error('Uçuş verileri alınamadı');
-      console.log(response);
-      setFlights(response.data);
-    } catch (error) {
-      console.error('Uçuş verileri yüklenirken hata oluştu:', error);
-    }
-  };
 
   const handleBookFlight = async (id: string) => {
     try{
