@@ -4,22 +4,27 @@ import { useFlightStore } from '../stores/FlightStore';
 
 const FlightResults: React.FC = () => {
 //  const [flights, setFlights] = useState<Flight[]>([]);
-  const { flights, fetchFlights } = useFlightStore();
+  const { flights, filteredFlights, fetchFlights } = useFlightStore();
 
   useEffect(() => {
     fetchFlights();
-    flights.map((flight)=>{
-      const timeString = flight.duration;
-      const hourMatch = timeString.match(/(\d+)h/);  // Saat eşleşmesini bulur
-      const minuteMatch = timeString.match(/(\d+)m/); // Dakika eşleşmesini bulur
-  
-      const hours = hourMatch ? parseInt(hourMatch[1]) : 0;
-      const minutes = minuteMatch ? parseInt(minuteMatch[1]) : 0;
-  
-      let time = hours * 60 + minutes;
-      flight.duration = time.toString();
-    })
-  },[]);
+  }, []); // Bu useEffect sadece bileşen monte edildiğinde çalışır
+
+  useEffect(() => {
+    if (flights.length > 0) {
+      flights.forEach((flight) => {
+        const timeString = flight.duration;
+        const hourMatch = timeString.match(/(\d+)h/);
+        const minuteMatch = timeString.match(/(\d+)m/);
+
+        const hours = hourMatch ? parseInt(hourMatch[1]) : 0;
+        const minutes = minuteMatch ? parseInt(minuteMatch[1]) : 0;
+
+        let time = hours * 60 + minutes;
+        flight.duration = time.toString();
+      });
+    }
+  }, [filteredFlights]);
 
   const handleBookFlight = async (id: string) => {
     try{
@@ -38,21 +43,21 @@ const FlightResults: React.FC = () => {
 
   return (
     <div className="mt-6">
-      {flights.map((flight,index) => (
-        <div key={index + 1} className="bg-white p-4 rounded-lg shadow mb-4">
-          <div className="flex justify-between items-center">
-            <div>
-              <div className="font-semibold">{flight.departure} - {flight.arrival}</div>
-              <div>{flight.from} - {flight.to} • {flight.duration}</div>
-            </div>
-            <div className='flex flex-row gap-4'>
+    {(filteredFlights.length > 0 ? filteredFlights : flights).map((flight, index) => (
+      <div key={index + 1} className="bg-white p-4 rounded-lg shadow mb-4">
+        <div className="flex justify-between items-center">
+          <div>
+            <div className="font-semibold">{flight.departure} - {flight.arrival}</div>
+            <div>{flight.from} - {flight.to} • {flight.duration}</div>
+          </div>
+          <div className='flex flex-row gap-4'>
             <div className="text-lg font-bold text-purple-600">${flight.price}</div>
             <button onClick={() => handleBookFlight(flight._id)} className="bg-purple-600 text-white px-4 py-2 rounded">Book Flight</button>
-            </div>
-            </div>
+          </div>
         </div>
-      ))}
-    </div>
+      </div>
+    ))}
+  </div>
   );
 }
 

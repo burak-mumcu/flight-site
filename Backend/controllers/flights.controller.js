@@ -14,9 +14,9 @@ const getAllFlights = async(req, res) => {
 }
 const getMyFlights = async(req, res) => {
     try {
-        const myFlights = await myFlights.find();
-        if (!myFlights) return res.status(404).json({ message: "No flights found" });
-        return res.status(200).json(myFlights);
+        const MyFlights = await myFlights.find();
+        if (!MyFlights) return res.status(404).json({ message: "No flights found" });
+        return res.status(200).json(MyFlights);
     } catch (error) {
         console.log(error);
         return res.status(500).json({ message: "Internal server error" });
@@ -26,21 +26,24 @@ const getMyFlights = async(req, res) => {
 const addMyFlights = async(req, res) => {
     try {
         const { flightId } = req.body;
-        const flight = await Flights.findById({ _id: flightId });
-        if (!flight) return res.status(404).json({ message: "No flight found" });
-        const MyFlights = await myFlights.create(flight);
-        return res.status(200).json(MyFlights);
+        const flight = await Flights.findById(flightId);
+        if (!flight) return res.status(404).json({ message: "Uçuş bulunamadı" });
+        let myFlight = new myFlights(flight.toObject());
+        await myFlight.save();
+        return res.status(200).json(myFlight);
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({ message: "Sunucu hatası" });
     }
 }
 
 const deleteMyFlights = async(req, res) => {
     const { flightId } = req.body;
+    console.log(flightId);
     try {
-        const myFlight = await MyFlights.deleteOne({ flightId });
+        const myFlight = await myFlights.findById(flightId);
         if (!myFlight) return res.status(404).json({ message: "No flight found" });
+        await myFlights.deleteOne({ _id: flightId });
         return res.status(200).json({ message: "Flight deleted" });
     } catch (error) {
         console.log(error);

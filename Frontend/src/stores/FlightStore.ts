@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
-interface Flight {
+export interface Flight {
     _id: string;
     departure: string;
     arrival: string;
